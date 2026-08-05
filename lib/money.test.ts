@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { addCents, formatCents } from "./money";
+import { addCents, formatCents } from "@/lib/money";
 
 describe("addCents", () => {
   it("adds two monetary amounts represented in cents", () => {
@@ -21,7 +21,31 @@ describe("addCents", () => {
 });
 
 describe("formatCents", () => {
-  it("formats cents as US dollars", () => {
+  it("formats the result of adding two positive amounts", () => {
+    expect(formatCents(1_275)).toBe("$12.75");
+  });
+
+  it("formats a positive balance after adding a negative amount", () => {
     expect(formatCents(1_025)).toBe("$10.25");
+  });
+
+  it("formats a zero-dollar amount", () => {
+    expect(formatCents(0)).toBe("$0.00");
+  });
+
+  it("formats a negative balance", () => {
+    expect(formatCents(-250)).toBe("-$2.50");
+  });
+
+  it("formats an amount below one dollar", () => {
+    expect(formatCents(5)).toBe("$0.05");
+  });
+
+  it("formats a whole-dollar amount with two decimal places", () => {
+    expect(formatCents(1_000)).toBe("$10.00");
+  });
+
+  it("formats a large amount with thousands separators", () => {
+    expect(formatCents(123_456)).toBe("$1,234.56");
   });
 });
