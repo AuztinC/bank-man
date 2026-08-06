@@ -7,5 +7,7 @@ create table public.accounts (
   opening_balance_cents bigint not null default 0,
   archived_at timestamp with time zone,
   created_at timestamp with time zone not null default now(),
-  updated_at timestamp with time zone not null default now()
+  updated_at timestamp with time zone not null default now(),
+  constraint accounts_account_type_check
+    check (account_type in ('checking', 'savings', 'cash'))
 );

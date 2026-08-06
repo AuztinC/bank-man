@@ -2,7 +2,13 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(25);
+select plan(33);
+
+insert into auth.users (id, email)
+values (
+  '11111111-1111-1111-1111-111111111111',
+  'account-types@example.test'
+);
 
 select has_table(
   'public',
@@ -175,6 +181,74 @@ select col_has_default(
   'accounts',
   'updated_at',
   'accounts.updated_at should have a default'
+);
+
+select lives_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', 'checking')
+  $$,
+  'accounts should accept the checking account type'
+);
+select lives_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', 'savings')
+  $$,
+  'accounts should accept the savings account type'
+);
+select lives_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', 'cash')
+  $$,
+  'accounts should accept the cash account type'
+);
+
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', '')
+  $$,
+  '23514',
+  null,
+  'accounts should reject an empty account type'
+);
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', 'credit')
+  $$,
+  '23514',
+  null,
+  'accounts should reject credit until debt accounts are supported'
+);
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', 'investment')
+  $$,
+  '23514',
+  null,
+  'accounts should reject investment accounts outside the MVP'
+);
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', 'CHECKING')
+  $$,
+  '23514',
+  null,
+  'accounts should reject uppercase account types'
+);
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', ' checking ')
+  $$,
+  '23514',
+  null,
+  'accounts should reject whitespace-padded account types'
 );
 
 select * from finish();
