@@ -22,6 +22,65 @@ const features = [
   },
 ];
 
+const confidenceItems = [
+  { title: "Private by design", icon: "shield" },
+  { title: "Built for real life", icon: "heart" },
+  { title: "Clear monthly planning", icon: "calendar" },
+] as const;
+
+function ConfidenceIcon({
+  icon,
+}: {
+  icon: (typeof confidenceItems)[number]["icon"];
+}) {
+  if (icon === "shield") {
+    return (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        className="size-6"
+      >
+        <path d="M12 3 5 6v5c0 4.6 2.9 8.8 7 10 4.1-1.2 7-5.4 7-10V6l-7-3Z" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+    );
+  }
+
+  if (icon === "heart") {
+    return (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        className="size-6"
+      >
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z" />
+        <path d="M7.5 12h2l1.2-2.5 2.1 5 1.2-2.5h2.5" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="size-6"
+    >
+      <path d="M6 3v3M18 3v3M4 9h16" />
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="m8 15 2 2 5-5" />
+    </svg>
+  );
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -48,9 +107,6 @@ export default function Home() {
           >
             <a className="transition hover:text-foreground" href="#why">
               Why Bank, Man?
-            </a>
-            <a className="transition hover:text-foreground" href="#features">
-              What you&apos;ll see
             </a>
           </nav>
 
@@ -131,15 +187,22 @@ export default function Home() {
             <h2 id="why-heading" className="sr-only">
               Why Bank, Man?
             </h2>
-            <div className="grid gap-6 sm:grid-cols-3 sm:divide-x sm:divide-white/10">
-              {[
-                ["Private by design", "Your records stay yours."],
-                ["Built for real life", "Plans can change with you."],
-                ["Clear monthly planning", "Know what is left at a glance."],
-              ].map(([title, description]) => (
-                <div key={title} className="sm:px-6 first:sm:pl-0 last:sm:pr-0">
-                  <h3 className="font-semibold">{title}</h3>
-                  <p className="mt-1 text-sm text-white/65">{description}</p>
+            <div className="grid gap-4 sm:grid-cols-3 sm:divide-x sm:divide-white/10">
+              {confidenceItems.map((item, index) => (
+                <div
+                  key={item.title}
+                  className="flex items-center gap-4 sm:px-6 first:sm:pl-0 last:sm:pr-0"
+                >
+                  <span
+                    className={`grid size-11 shrink-0 place-items-center rounded-xl ${
+                      index === 1
+                        ? "bg-sage text-white"
+                        : "bg-accent text-white"
+                    }`}
+                  >
+                    <ConfidenceIcon icon={item.icon} />
+                  </span>
+                  <h3 className="font-semibold leading-5">{item.title}</h3>
                 </div>
               ))}
             </div>

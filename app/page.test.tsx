@@ -28,9 +28,6 @@ describe("Home", () => {
     expect(
       within(navigation).getByRole("link", { name: "Why Bank, Man?" }),
     ).toHaveAttribute("href", "#why");
-    expect(
-      within(navigation).getByRole("link", { name: "What you'll see" }),
-    ).toHaveAttribute("href", "#features");
   });
 
   it("describes both welcoming homepage images", () => {
@@ -59,6 +56,31 @@ describe("Home", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Keep every dollar private" }),
+    ).toBeInTheDocument();
+  });
+
+  it("presents the confidence benefits as accessible headings", () => {
+    render(<Home />);
+
+    const confidenceSection = screen
+      .getByRole("heading", { name: "Why Bank, Man?" })
+      .closest("section");
+
+    expect(confidenceSection).not.toBeNull();
+    expect(
+      within(confidenceSection!).getByRole("heading", {
+        name: "Private by design",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(confidenceSection!).getByRole("heading", {
+        name: "Built for real life",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(confidenceSection!).getByRole("heading", {
+        name: "Clear monthly planning",
+      }),
     ).toBeInTheDocument();
   });
 });
