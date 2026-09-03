@@ -63,16 +63,16 @@ export default function LoginPage() {
             >
               <div>
                 <label
-                  htmlFor="username"
+                  htmlFor="email"
                   className="text-sm font-semibold text-foreground"
                 >
-                  Username or email
+                  Email
                 </label>
                 <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
                   placeholder="you@example.com"
                   className="mt-2 min-h-12 w-full rounded-xl border border-line bg-surface px-4 text-base outline-none transition placeholder:text-muted/65 focus:border-accent focus:ring-3 focus:ring-accent-soft"

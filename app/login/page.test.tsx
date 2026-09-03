@@ -8,14 +8,15 @@ describe("LoginPage", () => {
     render(<LoginPage />);
 
     const form = screen.getByRole("form", { name: "Welcome back." });
-    const username = within(form).getByRole("textbox", {
-      name: "Username or email",
+    const email = within(form).getByRole("textbox", {
+      name: "Email",
     });
     const password = within(form).getByLabelText("Password");
 
-    expect(username).toHaveAttribute("name", "username");
-    expect(username).toHaveAttribute("autocomplete", "username");
-    expect(username).toBeRequired();
+    expect(email).toHaveAttribute("name", "email");
+    expect(email).toHaveAttribute("type", "email");
+    expect(email).toHaveAttribute("autocomplete", "email");
+    expect(email).toBeRequired();
     expect(password).toHaveAttribute("type", "password");
     expect(password).toHaveAttribute("autocomplete", "current-password");
     expect(password).toBeRequired();

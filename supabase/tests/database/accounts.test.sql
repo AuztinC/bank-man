@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(33);
+select plan(41);
 
 insert into auth.users (id, email)
 values (
@@ -64,6 +64,13 @@ select fk_ok(
   'id',
   'accounts.user_id should reference auth.users.id'
 );
+select has_index(
+  'public',
+  'accounts',
+  'accounts_user_id_idx',
+  ARRAY['user_id'],
+  'accounts.user_id should be indexed'
+);
 
 select col_type_is(
   'public',
@@ -77,6 +84,12 @@ select col_not_null(
   'accounts',
   'account_name',
   'accounts.account_name should be required'
+);
+select col_has_check(
+  'public',
+  'accounts',
+  'account_name',
+  'accounts should constrain account names'
 );
 
 select col_type_is(
@@ -112,6 +125,12 @@ select col_default_is(
   'currency',
   'USD',
   'accounts.currency should default to USD'
+);
+select col_has_check(
+  'public',
+  'accounts',
+  'currency',
+  'accounts should constrain currency values'
 );
 
 select col_type_is(
@@ -203,6 +222,60 @@ select lives_ok(
     values ('11111111-1111-1111-1111-111111111111', 'cash')
   $$,
   'accounts should accept the cash account type'
+);
+select lives_ok(
+  $$
+    insert into public.accounts (
+      user_id,
+      account_name,
+      account_type,
+      currency
+    )
+    values (
+      '11111111-1111-1111-1111-111111111111',
+      'Everyday Checking',
+      'checking',
+      'USD'
+    )
+  $$,
+  'accounts should accept a trimmed name and USD currency'
+);
+
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_name, account_type)
+    values ('11111111-1111-1111-1111-111111111111', '', 'checking')
+  $$,
+  '23514',
+  null,
+  'accounts should reject an empty account name'
+);
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_name, account_type)
+    values ('11111111-1111-1111-1111-111111111111', '   ', 'checking')
+  $$,
+  '23514',
+  null,
+  'accounts should reject a whitespace-only account name'
+);
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_name, account_type)
+    values ('11111111-1111-1111-1111-111111111111', ' Checking ', 'checking')
+  $$,
+  '23514',
+  null,
+  'accounts should reject a whitespace-padded account name'
+);
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_type, currency)
+    values ('11111111-1111-1111-1111-111111111111', 'checking', 'EUR')
+  $$,
+  '23514',
+  null,
+  'accounts should reject non-USD currency values'
 );
 
 select throws_ok(
