@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bank, Man!
 
-## Getting Started
+A personal finance manager built with Next.js and Supabase.
 
-First, run the development server:
+## Prerequisites
+
+- Node.js 20.9 or newer
+- npm
+- Docker Desktop or another Docker-compatible runtime
+
+## Initial setup
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create the local environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+Start the local Supabase stack:
+
+```bash
+npm run db:start
+```
+
+Copy the API URL and publishable key printed by Supabase into `.env.local`:
+
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-local-publishable-key
+```
+
+Do not commit `.env.local` or credentials from a hosted Supabase project.
+
+## Local development
+
+Start the application:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The local services are available at:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Application: http://localhost:3000
+- Supabase API: http://127.0.0.1:54321
+- Supabase Studio: http://127.0.0.1:54323
+- Local email viewer: http://127.0.0.1:54324
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Stop the Supabase stack with `npm run db:stop`.
 
-## Learn More
+## Database workflow
 
-To learn more about Next.js, take a look at the following resources:
+Migrations in `supabase/migrations` are the source of truth for schema changes.
+The seed file is `supabase/seed.sql`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Reset the local database, reapply all migrations, and reload the seed file:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run db:reset
+```
 
-## Deploy on Vercel
+This command replaces local database data. It does not target a hosted project.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Lint the application-owned database schema and run the pgTAP suite:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run db:lint
+npm run db:test
+```
+
+## Verification
+
+Run the automated checks:
+
+```bash
+npm run test:run
+npm run test:integration
+npm run lint
+npm run typecheck
+npm run format:check
+```
+
+`npm run test:integration` requires the local Supabase stack and values in
+`.env.local`.
+
+A production build can be checked with `npm run build`.

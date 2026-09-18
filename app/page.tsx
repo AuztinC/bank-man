@@ -117,11 +117,11 @@ export default function Home() {
             Open dashboard
           </Link>
           <Link
-              href="/login"
+            href="/login"
             className="inline-flex min-h-11 items-center justify-center rounded-xl bg-sidebar px-4 text-sm font-semibold text-white transition hover:bg-sidebar/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              Login/Signup
-            </Link>
+          >
+            Login/Signup
+          </Link>
         </div>
       </header>
 
@@ -304,7 +304,6 @@ export default function Home() {
             >
               Open the dashboard
             </Link>
-            
           </div>
         </section>
       </main>
