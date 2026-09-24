@@ -109,8 +109,9 @@ export default function LoginPage() {
                 className="flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur"
               >
                 <span
-                  className={`grid size-11 shrink-0 place-items-center rounded-xl ${index === 0 ? "bg-accent" : "bg-sage"
-                    }`}
+                  className={`grid size-11 shrink-0 place-items-center rounded-xl ${
+                    index === 0 ? "bg-accent" : "bg-sage"
+                  }`}
                 >
                   <svg
                     aria-hidden="true"

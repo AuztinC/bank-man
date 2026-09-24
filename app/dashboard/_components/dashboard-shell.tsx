@@ -1,4 +1,4 @@
-import  signOut  from "@/app/logout/route";
+import signOut from "@/app/logout/actions";
 import Link from "next/link";
 
 const navigation = [
@@ -43,10 +43,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               key={item.href}
               href={item.href}
               aria-current={index === 0 ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-soft ${index === 0
-                ? "bg-white/10 text-white"
-                : "text-sidebar-muted hover:bg-white/5 hover:text-white"
-                }`}
+              className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-soft ${
+                index === 0
+                  ? "bg-white/10 text-white"
+                  : "text-sidebar-muted hover:bg-white/5 hover:text-white"
+              }`}
             >
               <span
                 aria-hidden="true"
@@ -65,14 +66,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             You are 62% through your planned spending.
           </p>
         </div>
-        <form method="post"
-          action={signOut}>
-          <button type="submit"
-            className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-accent px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar">
+        <form method="post" action={signOut}>
+          <button
+            type="submit"
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-accent px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar"
+          >
             Logout
           </button>
         </form>
-
       </aside>
 
       <div className="lg:pl-64">
@@ -100,8 +101,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             key={item.href}
             href={item.href}
             aria-current={index === 0 ? "page" : undefined}
-            className={`rounded-xl px-1 py-2 text-center text-xs font-medium focus-visible:outline-2 focus-visible:outline-accent ${index === 0 ? "bg-accent-soft text-foreground" : "text-muted"
-              }`}
+            className={`rounded-xl px-1 py-2 text-center text-xs font-medium focus-visible:outline-2 focus-visible:outline-accent ${
+              index === 0 ? "bg-accent-soft text-foreground" : "text-muted"
+            }`}
           >
             {item.shortLabel}
           </Link>
