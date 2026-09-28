@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import Logout from "./logout/logout";
+import { createClient } from "@/lib/supabase/server";
 
 const features = [
   {
@@ -81,7 +83,12 @@ function ConfidenceIcon({
   );
 }
 
-export default function Home() {
+
+
+export default async function Home() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-line/80 bg-surface/90 backdrop-blur">
@@ -116,12 +123,14 @@ export default function Home() {
           >
             Open dashboard
           </Link>
+          {!data?.claims ? 
           <Link
             href="/login"
             className="inline-flex min-h-11 items-center justify-center rounded-xl bg-sidebar px-4 text-sm font-semibold text-white transition hover:bg-sidebar/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Login/Signup
           </Link>
+          : <Logout />}
         </div>
       </header>
 
@@ -200,11 +209,10 @@ export default function Home() {
                   className="flex items-center gap-4 sm:px-6 first:sm:pl-0 last:sm:pr-0"
                 >
                   <span
-                    className={`grid size-11 shrink-0 place-items-center rounded-xl ${
-                      index === 1
+                    className={`grid size-11 shrink-0 place-items-center rounded-xl ${index === 1
                         ? "bg-sage text-white"
                         : "bg-accent text-white"
-                    }`}
+                      }`}
                   >
                     <ConfidenceIcon icon={item.icon} />
                   </span>
@@ -236,9 +244,8 @@ export default function Home() {
             {features.map((feature, index) => (
               <article
                 key={feature.title}
-                className={`rounded-3xl border border-line p-6 shadow-[0_12px_40px_rgba(64,55,43,0.05)] ${
-                  index === 1 ? "bg-sage-soft" : "bg-surface"
-                }`}
+                className={`rounded-3xl border border-line p-6 shadow-[0_12px_40px_rgba(64,55,43,0.05)] ${index === 1 ? "bg-sage-soft" : "bg-surface"
+                  }`}
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
                   {feature.eyebrow}

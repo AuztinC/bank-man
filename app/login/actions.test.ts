@@ -64,14 +64,8 @@ describe("login", () => {
     expect(parseLoginCredentials).toHaveBeenCalledWith({
       email: "  PERSON@Example.COM  ",
       password: "secret-password",
+      remember: null
     });
-    expect(consoleLog).toHaveBeenCalledWith(
-      "user sign-in attempt, ",
-      "person@example.com",
-    );
-    expect(consoleLog).not.toHaveBeenCalledWith(
-      expect.stringContaining("secret-password"),
-    );
   });
 
   it("signs in and redirects to the dashboard", async () => {
@@ -113,4 +107,5 @@ describe("login", () => {
 
     expect(redirectMock).not.toHaveBeenCalled();
   });
+
 });

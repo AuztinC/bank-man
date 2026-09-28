@@ -1,4 +1,5 @@
 import signOut from "@/app/logout/actions";
+import Logout from "@/app/logout/logout";
 import Link from "next/link";
 
 const navigation = [
@@ -66,14 +67,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             You are 62% through your planned spending.
           </p>
         </div>
-        <form method="post" action={signOut}>
-          <button
-            type="submit"
-            className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-accent px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar"
-          >
-            Logout
-          </button>
-        </form>
+        <Logout />
       </aside>
 
       <div className="lg:pl-64">

@@ -11,11 +11,13 @@ export async function login(
   _previousState: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
+  console.log(formData)
   const credentials = parseLoginCredentials({
     email: formData.get("email"),
     password: formData.get("password"),
+    remember: formData.get("remember")
   });
-  console.log("user sign-in attempt, ", credentials.email);
+  console.log("user sign-in attempt, ", credentials);
 
   const supabase = await createClient();
 
@@ -27,6 +29,6 @@ export async function login(
   if (error) {
     return { error: "The email or password you entered is incorrect." };
   }
-
+  
   redirect("/dashboard");
 }

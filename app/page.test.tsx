@@ -1,11 +1,32 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import Home from "@/app/page";
 
+const { getClaimsMock } = vi.hoisted(() => ({
+  getClaimsMock: vi.fn(),
+}));
+
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(async () => ({
+    auth: {
+      getClaims: getClaimsMock,
+    },
+  })),
+}));
+
+async function renderHome(claims: Record<string, unknown> | null = null) {
+  getClaimsMock.mockResolvedValue({ data: { claims } });
+  render(await Home());
+}
+
 describe("Home", () => {
-  it("introduces the product with a clear primary action", () => {
-    render(<Home />);
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("introduces the product with a clear primary action", async () => {
+    await renderHome();
 
     expect(
       screen.getByRole("heading", {
@@ -18,8 +39,8 @@ describe("Home", () => {
     ).toHaveAttribute("href", "/dashboard");
   });
 
-  it("provides accessible primary navigation", () => {
-    render(<Home />);
+  it("provides accessible primary navigation", async () => {
+    await renderHome();
 
     const navigation = screen.getByRole("navigation", {
       name: "Main navigation",
@@ -28,10 +49,34 @@ describe("Home", () => {
     expect(
       within(navigation).getByRole("link", { name: "Why Bank, Man?" }),
     ).toHaveAttribute("href", "#why");
+    expect(
+      screen.getByRole("link", { name: "Open dashboard" }),
+    ).toHaveAttribute("href", "/dashboard");
   });
 
-  it("describes both welcoming homepage images", () => {
-    render(<Home />);
+  it("shows login navigation to signed-out visitors", async () => {
+    await renderHome();
+
+    expect(screen.getByRole("link", { name: "Login/Signup" })).toHaveAttribute(
+      "href",
+      "/login",
+    );
+    expect(
+      screen.queryByRole("button", { name: "Logout" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows logout navigation to signed-in visitors", async () => {
+    await renderHome({ sub: "user-id" });
+
+    expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Login/Signup" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("describes both welcoming homepage images", async () => {
+    await renderHome();
 
     expect(
       screen.getByRole("img", {
@@ -45,8 +90,8 @@ describe("Home", () => {
     ).toBeInTheDocument();
   });
 
-  it("explains the three core product benefits", () => {
-    render(<Home />);
+  it("explains the three core product benefits", async () => {
+    await renderHome();
 
     expect(
       screen.getByRole("heading", { name: "See the whole picture" }),
@@ -59,8 +104,8 @@ describe("Home", () => {
     ).toBeInTheDocument();
   });
 
-  it("presents the confidence benefits as accessible headings", () => {
-    render(<Home />);
+  it("presents the confidence benefits as accessible headings", async () => {
+    await renderHome();
 
     const confidenceSection = screen
       .getByRole("heading", { name: "Why Bank, Man?" })

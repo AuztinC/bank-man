@@ -13,7 +13,6 @@ export default function LoginForm() {
     <form
       action={formAction}
       aria-labelledby="login-heading"
-      method="POST"
       className="mt-8 space-y-5"
     >
       <div>
