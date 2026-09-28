@@ -15,5 +15,5 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  return <DashboardShell>{children}</DashboardShell>;
+  return <DashboardShell email={claims.email}>{children}</DashboardShell>;
 }

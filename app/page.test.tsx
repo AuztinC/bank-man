@@ -67,9 +67,13 @@ describe("Home", () => {
   });
 
   it("shows logout navigation to signed-in visitors", async () => {
-    await renderHome({ sub: "user-id" });
+    await renderHome({ sub: "user-id", email: "person@example.com" });
 
     expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
+    const email = screen.getByText("person@example.com");
+
+    expect(email).toHaveAttribute("title", "person@example.com");
+    expect(email).toHaveClass("truncate");
     expect(
       screen.queryByRole("link", { name: "Login/Signup" }),
     ).not.toBeInTheDocument();

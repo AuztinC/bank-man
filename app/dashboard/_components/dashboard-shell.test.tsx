@@ -43,4 +43,17 @@ describe("DashboardShell", () => {
       screen.getByRole("heading", { name: "Dashboard content" }),
     ).toBeInTheDocument();
   });
+
+  it("identifies the signed-in account beneath the brand", () => {
+    render(
+      <DashboardShell email="person@example.com">
+        Dashboard content
+      </DashboardShell>,
+    );
+
+    const email = screen.getByText("person@example.com");
+
+    expect(email).toHaveAttribute("title", "person@example.com");
+    expect(email).toHaveClass("text-center");
+  });
 });

@@ -32,11 +32,25 @@ function Brand() {
   );
 }
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({
+  children,
+  email,
+}: {
+  children: React.ReactNode;
+  email?: string;
+}) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col bg-sidebar px-5 py-6 lg:flex">
         <Brand />
+        {email && (
+          <p
+            className="mt-2 w-full truncate text-center text-xs text-sidebar-muted"
+            title={email}
+          >
+            {email}
+          </p>
+        )}
 
         <nav aria-label="Primary" className="mt-10 flex flex-col gap-2">
           {navigation.map((item, index) => (
