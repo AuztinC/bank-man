@@ -57,15 +57,6 @@ export default function LoginForm() {
           className="mt-2 min-h-12 w-full rounded-xl border border-line bg-surface px-4 text-base outline-none transition focus:border-accent focus:ring-3 focus:ring-accent-soft"
         />
       </div>
-
-      <label className="flex w-fit items-center gap-3 text-sm text-muted">
-        <input
-          name="remember"
-          type="checkbox"
-          className="size-4 rounded border-line accent-accent"
-        />
-        Remember me on this device
-      </label>
       {state.error && (
         <p role="alert" className="text-sm text-red-700">
           {state.error}

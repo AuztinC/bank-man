@@ -82,6 +82,34 @@ describe("updateSession", () => {
     expect(response.status).toBe(200);
   });
 
+  it("redirects authenticated dashboard requests to signup or login", async () => {
+    createServerClientMock.mockReturnValue({
+      auth: {
+        getClaims: vi.fn().mockResolvedValue({
+          data: { claims: { sub: "user-id" } },
+        }),
+      },
+    });
+
+    let response = await updateSession(
+      new NextRequest("http://localhost:3000/signup"),
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost:3000/dashboard",
+    );
+
+    response = await updateSession(
+      new NextRequest("http://localhost:3000/login"),
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost:3000/dashboard",
+    );
+  });
+
   it("forwards refreshed cookies and private cache headers", async () => {
     createServerClientMock.mockImplementation(
       (_url, _key, options: ProxyClientOptions) => ({

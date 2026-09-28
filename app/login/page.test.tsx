@@ -21,11 +21,6 @@ describe("LoginPage", () => {
     expect(password).toHaveAttribute("autocomplete", "current-password");
     expect(password).toBeRequired();
     expect(
-      within(form).getByRole("checkbox", {
-        name: "Remember me on this device",
-      }),
-    ).toBeInTheDocument();
-    expect(
       within(form).getByRole("button", { name: "Log in" }),
     ).toHaveAttribute("type", "submit");
   });
