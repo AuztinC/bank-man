@@ -1,4 +1,3 @@
-import signOut from "@/app/logout/actions";
 import Logout from "@/app/logout/logout";
 import Link from "next/link";
 

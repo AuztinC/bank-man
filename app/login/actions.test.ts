@@ -48,12 +48,11 @@ describe("login", () => {
     vi.restoreAllMocks();
   });
 
-  it("validates submitted credentials and logs only the normalized email", async () => {
+  it("validates submitted credentials", async () => {
     vi.mocked(parseLoginCredentials).mockReturnValue({
       email: "person@example.com",
       password: "secret-password",
     });
-    const consoleLog = vi.spyOn(console, "log").mockImplementation(() => {});
 
     const formData = new FormData();
     formData.set("email", "  PERSON@Example.COM  ");
@@ -64,7 +63,7 @@ describe("login", () => {
     expect(parseLoginCredentials).toHaveBeenCalledWith({
       email: "  PERSON@Example.COM  ",
       password: "secret-password",
-      remember: null
+      remember: null,
     });
   });
 
@@ -107,5 +106,4 @@ describe("login", () => {
 
     expect(redirectMock).not.toHaveBeenCalled();
   });
-
 });

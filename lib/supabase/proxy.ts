@@ -37,7 +37,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (claims && request.nextUrl.pathname.startsWith("/signup") || claims && request.nextUrl.pathname.startsWith("/login")) {
+  if (
+    (claims && request.nextUrl.pathname.startsWith("/signup")) ||
+    (claims && request.nextUrl.pathname.startsWith("/login"))
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
