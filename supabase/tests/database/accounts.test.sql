@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(66);
+select plan(70);
 
 create schema tests;
 
@@ -73,6 +73,7 @@ select columns_are(
     'account_type',
     'currency',
     'opening_balance_cents',
+    'opening_balance_as_of',
     'archived_at',
     'created_at',
     'updated_at'
@@ -248,6 +249,26 @@ select col_default_is(
 select col_type_is(
   'public',
   'accounts',
+  'opening_balance_as_of',
+  'date',
+  'accounts.opening_balance_as_of should be date'
+);
+select col_not_null(
+  'public',
+  'accounts',
+  'opening_balance_as_of',
+  'accounts.opening_balance_as_of should be required'
+);
+select col_hasnt_default(
+  'public',
+  'accounts',
+  'opening_balance_as_of',
+  'accounts.opening_balance_as_of should not have a default'
+);
+
+select col_type_is(
+  'public',
+  'accounts',
   'archived_at',
   'timestamp with time zone',
   'accounts.archived_at should be a timestamp with time zone'
@@ -295,22 +316,22 @@ select col_has_default(
 
 select lives_ok(
   $$
-    insert into public.accounts (user_id, account_type)
-    values ('11111111-1111-1111-1111-111111111111', 'checking')
+    insert into public.accounts (user_id, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', 'checking', '2026-11-11')
   $$,
   'accounts should accept the checking account type'
 );
 select lives_ok(
   $$
-    insert into public.accounts (user_id, account_type)
-    values ('11111111-1111-1111-1111-111111111111', 'savings')
+    insert into public.accounts (user_id, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', 'savings', '2026-11-11')
   $$,
   'accounts should accept the savings account type'
 );
 select lives_ok(
   $$
-    insert into public.accounts (user_id, account_type)
-    values ('11111111-1111-1111-1111-111111111111', 'cash')
+    insert into public.accounts (user_id, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', 'cash', '2026-11-11')
   $$,
   'accounts should accept the cash account type'
 );
@@ -320,13 +341,15 @@ select lives_ok(
       user_id,
       account_name,
       account_type,
-      currency
+      currency,
+      opening_balance_as_of
     )
     values (
       '11111111-1111-1111-1111-111111111111',
       'Everyday Checking',
       'checking',
-      'USD'
+      'USD',
+      '2026-11-11'
     )
   $$,
   'accounts should accept a trimmed name and USD currency'
@@ -334,8 +357,8 @@ select lives_ok(
 
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_name, account_type)
-    values ('11111111-1111-1111-1111-111111111111', '', 'checking')
+    insert into public.accounts (user_id, account_name, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', '', 'checking', '2026-11-11')
   $$,
   '23514',
   null,
@@ -343,8 +366,8 @@ select throws_ok(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_name, account_type)
-    values ('11111111-1111-1111-1111-111111111111', '   ', 'checking')
+    insert into public.accounts (user_id, account_name, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', '   ', 'checking', '2026-11-11')
   $$,
   '23514',
   null,
@@ -352,8 +375,8 @@ select throws_ok(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_name, account_type)
-    values ('11111111-1111-1111-1111-111111111111', ' Checking ', 'checking')
+    insert into public.accounts (user_id, account_name, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', ' Checking ', 'checking', '2026-11-11')
   $$,
   '23514',
   null,
@@ -361,8 +384,8 @@ select throws_ok(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_type, currency)
-    values ('11111111-1111-1111-1111-111111111111', 'checking', 'EUR')
+    insert into public.accounts (user_id, account_type, currency, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', 'checking', 'EUR', '2026-11-11')
   $$,
   '23514',
   null,
@@ -371,8 +394,8 @@ select throws_ok(
 
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_type)
-    values ('11111111-1111-1111-1111-111111111111', '')
+    insert into public.accounts (user_id, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', '', '2026-11-11')
   $$,
   '23514',
   null,
@@ -380,8 +403,8 @@ select throws_ok(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_type)
-    values ('11111111-1111-1111-1111-111111111111', 'credit')
+    insert into public.accounts (user_id, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', 'credit', '2026-11-11')
   $$,
   '23514',
   null,
@@ -389,8 +412,8 @@ select throws_ok(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_type)
-    values ('11111111-1111-1111-1111-111111111111', 'investment')
+    insert into public.accounts (user_id, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', 'investment', '2026-11-11')
   $$,
   '23514',
   null,
@@ -398,8 +421,8 @@ select throws_ok(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_type)
-    values ('11111111-1111-1111-1111-111111111111', 'CHECKING')
+    insert into public.accounts (user_id, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', 'CHECKING', '2026-11-11')
   $$,
   '23514',
   null,
@@ -407,32 +430,45 @@ select throws_ok(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_type)
-    values ('11111111-1111-1111-1111-111111111111', ' checking ')
+    insert into public.accounts (user_id, account_type, opening_balance_as_of)
+    values ('11111111-1111-1111-1111-111111111111', ' checking ', '2026-11-11')
   $$,
   '23514',
   null,
   'accounts should reject whitespace-padded account types'
 );
 
+select throws_ok(
+  $$
+    insert into public.accounts (user_id, account_type)
+    values ('11111111-1111-1111-1111-111111111111', 'checking')
+  $$,
+  '23502',
+  null,
+  'accounts should require an opening balance date'
+);
+
 insert into public.accounts (
   id,
   user_id,
   account_name,
-  account_type
+  account_type,
+  opening_balance_as_of
 )
 values
   (
     'aaaaaaaa-0000-0000-0000-000000000001',
     'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
     'User A Checking',
-    'checking'
+    'checking',
+    '2026-11-11'
   ),
   (
     'bbbbbbbb-0000-0000-0000-000000000001',
     'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
     'User B Checking',
-    'checking'
+    'checking',
+    '2026-11-11'
   );
 
 select tests.authenticate_as_anon();
@@ -446,11 +482,12 @@ select throws_ok(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_name, account_type)
+    insert into public.accounts (user_id, account_name, account_type, opening_balance_as_of)
     values (
       'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
       'Anonymous Account',
-      'checking'
+      'checking',
+      '2026-11-11'
     )
   $$,
   '42501',
@@ -498,11 +535,12 @@ select is_empty(
 );
 select results_eq(
   $$
-    insert into public.accounts (user_id, account_name, account_type)
+    insert into public.accounts (user_id, account_name, account_type, opening_balance_as_of)
     values (
       'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
       'User A Savings',
-      'savings'
+      'savings',
+      '2026-11-11'
     )
     returning account_name
   $$,
@@ -511,11 +549,12 @@ select results_eq(
 );
 select throws_ok(
   $$
-    insert into public.accounts (user_id, account_name, account_type)
+    insert into public.accounts (user_id, account_name, account_type, opening_balance_as_of)
     values (
       'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
       'Account for User B',
-      'checking'
+      'checking',
+      '2026-11-11'
     )
   $$,
   '42501',
