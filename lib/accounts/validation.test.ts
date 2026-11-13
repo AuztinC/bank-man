@@ -11,7 +11,21 @@ describe("parseAccountInput", () => {
   };
 
   it("accepts valid account credentials", () => {
-    expect(parseAccountInput(validAccount)).toEqual(validAccount);
+    expect(parseAccountInput(validAccount)).toEqual({
+      accountName: "Good Account",
+      accountType: "checking",
+      openingBalanceCents: 1_000,
+      openingBalanceAsOf: "2026-11-11",
+    });
+  });
+
+  it("trims the account name", () => {
+    expect(
+      parseAccountInput({
+        ...validAccount,
+        accountName: "  Good Account  ",
+      }).accountName,
+    ).toBe("Good Account");
   });
 
   it.each(["checking", "savings", "cash"])(
@@ -41,7 +55,7 @@ describe("parseAccountInput", () => {
     },
   );
 
-  it.each(["", undefined, 42])(
+  it.each(["", "   ", undefined, 42])(
     "rejects an invalid account name: %j",
     (accountName) => {
       expect(() =>
@@ -50,14 +64,41 @@ describe("parseAccountInput", () => {
     },
   );
 
-  it.each([undefined, null, 42])(
-    "rejects an invalid opening balance: %j",
-    (openingBalance) => {
-      expect(() =>
-        parseAccountInput({ ...validAccount, openingBalance }),
-      ).toThrow();
+  it.each([
+    ["0", 0],
+    ["12", 1_200],
+    ["12.3", 1_230],
+    [".05", 5],
+    ["-0.05", -5],
+    ["  42.10  ", 4_210],
+  ])(
+    "transforms the opening balance %j to %i cents",
+    (openingBalance, expected) => {
+      expect(
+        parseAccountInput({ ...validAccount, openingBalance })
+          .openingBalanceCents,
+      ).toBe(expected);
     },
   );
+
+  it.each([
+    undefined,
+    null,
+    42,
+    "",
+    "   ",
+    "not money",
+    "1.234",
+    "$12.34",
+    "1,000.00",
+    "1e2",
+    "90071992547409.92",
+    "-90071992547409.92",
+  ])("rejects an invalid opening balance: %j", (openingBalance) => {
+    expect(() =>
+      parseAccountInput({ ...validAccount, openingBalance }),
+    ).toThrow();
+  });
 
   it("accepts a valid leap-day opening balance date", () => {
     expect(
