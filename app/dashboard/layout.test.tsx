@@ -15,6 +15,7 @@ vi.mock("@/lib/supabase/server", () => ({
 
 vi.mock("next/navigation", () => ({
   redirect: redirectMock,
+  usePathname: vi.fn(() => "/dashboard"),
 }));
 
 describe("DashboardLayout", () => {

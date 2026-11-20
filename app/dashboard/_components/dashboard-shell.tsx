@@ -1,16 +1,6 @@
 import Logout from "@/app/logout/logout";
+import { DashboardNavigation } from "@/app/dashboard/_components/dashboard-navigation";
 import Link from "next/link";
-
-const navigation = [
-  { label: "Overview", href: "/dashboard", shortLabel: "Home" },
-  { label: "Accounts", href: "/dashboard/accounts", shortLabel: "Accounts" },
-  {
-    label: "Transactions",
-    href: "/dashboard/transactions",
-    shortLabel: "Activity",
-  },
-  { label: "Budgets", href: "/dashboard/budgets", shortLabel: "Budgets" },
-];
 
 function Brand() {
   return (
@@ -51,26 +41,7 @@ export function DashboardShell({
           </p>
         )}
 
-        <nav aria-label="Primary" className="mt-10 flex flex-col gap-2">
-          {navigation.map((item, index) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={index === 0 ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-soft ${
-                index === 0
-                  ? "bg-white/10 text-white"
-                  : "text-sidebar-muted hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <span
-                aria-hidden="true"
-                className={`size-2 rounded-full ${index === 0 ? "bg-accent" : "bg-sidebar-muted/50"}`}
-              />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <DashboardNavigation variant="primary" />
 
         <div className="mt-auto rounded-2xl border border-white/10 bg-white/5 p-4">
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-sidebar-muted">
@@ -99,23 +70,7 @@ export function DashboardShell({
         </main>
       </div>
 
-      <nav
-        aria-label="Mobile"
-        className="fixed inset-x-3 bottom-3 z-10 grid grid-cols-4 rounded-2xl border border-line bg-surface/95 p-2 shadow-[0_18px_50px_rgba(51,45,35,0.16)] backdrop-blur lg:hidden"
-      >
-        {navigation.map((item, index) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={index === 0 ? "page" : undefined}
-            className={`rounded-xl px-1 py-2 text-center text-xs font-medium focus-visible:outline-2 focus-visible:outline-accent ${
-              index === 0 ? "bg-accent-soft text-foreground" : "text-muted"
-            }`}
-          >
-            {item.shortLabel}
-          </Link>
-        ))}
-      </nav>
+      <DashboardNavigation variant="mobile" />
     </div>
   );
 }

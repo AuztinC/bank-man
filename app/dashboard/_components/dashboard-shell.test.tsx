@@ -1,9 +1,21 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DashboardShell } from "@/app/dashboard/_components/dashboard-shell";
 
+const { usePathnameMock } = vi.hoisted(() => ({
+  usePathnameMock: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  usePathname: usePathnameMock,
+}));
+
 describe("DashboardShell", () => {
+  beforeEach(() => {
+    usePathnameMock.mockReturnValue("/dashboard");
+  });
+
   it("provides primary navigation for desktop and mobile", () => {
     render(
       <DashboardShell>
@@ -30,6 +42,32 @@ describe("DashboardShell", () => {
     render(<DashboardShell>Dashboard content</DashboardShell>);
 
     expect(screen.getAllByRole("link", { current: "page" })).toHaveLength(2);
+  });
+
+  it("identifies accounts as the current page on the accounts route", () => {
+    usePathnameMock.mockReturnValue("/dashboard/accounts");
+
+    render(<DashboardShell>Accounts content</DashboardShell>);
+
+    const primaryNavigation = screen.getByRole("navigation", {
+      name: "Primary",
+    });
+    const mobileNavigation = screen.getByRole("navigation", {
+      name: "Mobile",
+    });
+
+    expect(
+      within(primaryNavigation).getByRole("link", {
+        name: "Accounts",
+        current: "page",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(mobileNavigation).getByRole("link", {
+        name: "Accounts",
+        current: "page",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("renders page content inside the application shell", () => {
