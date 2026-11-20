@@ -1,3 +1,12 @@
+"use client";
+
+import { useActionState } from "react";
+
+import {
+  createTransaction,
+  type CreateTransactionState,
+} from "@/app/dashboard/transactions/actions";
+
 type TransactionAccount = {
   id: string;
   name: string;
@@ -9,9 +18,21 @@ export function TransactionForm({
   accounts: TransactionAccount[];
 }) {
   const hasAccounts = accounts.length > 0;
+  const initialState: CreateTransactionState = {
+    error: null,
+    success: null,
+  };
+  const [state, formAction, pending] = useActionState(
+    createTransaction,
+    initialState,
+  );
 
   return (
-    <form aria-label="Create a transaction" className="mt-6 space-y-5">
+    <form
+      action={formAction}
+      aria-label="Create a transaction"
+      className="mt-6 space-y-5"
+    >
       <div>
         <label htmlFor="accountId" className="text-sm font-semibold">
           Account
@@ -117,12 +138,23 @@ export function TransactionForm({
         </p>
       )}
 
+      {state.error && (
+        <p role="alert" className="text-sm text-red-700">
+          {state.error}
+        </p>
+      )}
+      {state.success && (
+        <p role="status" className="text-sm text-sage">
+          {state.success}
+        </p>
+      )}
+
       <button
         type="submit"
-        disabled={!hasAccounts}
+        disabled={!hasAccounts || pending}
         className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-accent px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Create transaction
+        {pending ? "Creating transaction…" : "Create transaction"}
       </button>
     </form>
   );

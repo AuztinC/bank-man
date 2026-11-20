@@ -32,7 +32,7 @@ describe("AccountsPage", () => {
 
     expect(fromMock).toHaveBeenCalledWith("accounts");
     expect(selectMock).toHaveBeenCalledWith(
-      "id, account_name, account_type, currency, opening_balance_cents, opening_balance_as_of, opening_balance_status",
+      "id, account_name, account_type, currency, opening_balance_cents, opening_balance_as_of, opening_balance_status, transactions(amount_cents)",
     );
     expect(isMock).toHaveBeenCalledWith("archived_at", null);
     expect(orderMock).toHaveBeenCalledWith("account_name", {
@@ -62,6 +62,7 @@ describe("AccountsPage", () => {
           opening_balance_cents: 12_345,
           opening_balance_as_of: "2026-11-13",
           opening_balance_status: "unverified",
+          transactions: [{ amount_cents: 10_000 }, { amount_cents: -4_250 }],
         },
         {
           id: "account-2",
@@ -71,6 +72,7 @@ describe("AccountsPage", () => {
           opening_balance_cents: 250_000,
           opening_balance_as_of: "2026-10-31",
           opening_balance_status: "verified",
+          transactions: [],
         },
       ],
       error: null,
@@ -88,7 +90,10 @@ describe("AccountsPage", () => {
       }),
     ).toBeInTheDocument();
     expect(within(accounts[0]).getByText("Checking")).toBeInTheDocument();
-    expect(within(accounts[0]).getByText("$123.45")).toBeInTheDocument();
+    expect(within(accounts[0]).getByText("$180.95")).toBeInTheDocument();
+    expect(
+      within(accounts[0]).getByText("Current balance"),
+    ).toBeInTheDocument();
     expect(within(accounts[0]).getByText("Unverified")).toBeInTheDocument();
     expect(within(accounts[0]).getByText("November 13, 2026")).toHaveAttribute(
       "datetime",

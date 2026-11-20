@@ -1,7 +1,21 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { TransactionForm } from "@/app/dashboard/transactions/_components/transaction-form";
+
+const { formActionMock, useActionStateMock } = vi.hoisted(() => ({
+  formActionMock: vi.fn(),
+  useActionStateMock: vi.fn(),
+}));
+
+vi.mock("react", async (importOriginal) => {
+  const react = await importOriginal<typeof import("react")>();
+
+  return {
+    ...react,
+    useActionState: useActionStateMock,
+  };
+});
 
 const accounts = [
   { id: "account-1", name: "Everyday Checking" },
@@ -9,6 +23,15 @@ const accounts = [
 ];
 
 describe("TransactionForm", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useActionStateMock.mockReturnValue([
+      { error: null, success: null },
+      formActionMock,
+      false,
+    ]);
+  });
+
   it("renders the fields expected by transaction validation", () => {
     render(<TransactionForm accounts={accounts} />);
 
@@ -80,5 +103,47 @@ describe("TransactionForm", () => {
         "Create an account before recording your first transaction.",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("announces validation and database errors", () => {
+    useActionStateMock.mockReturnValue([
+      { error: "Transaction amount must be greater than zero.", success: null },
+      formActionMock,
+      false,
+    ]);
+
+    render(<TransactionForm accounts={accounts} />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Transaction amount must be greater than zero.",
+    );
+  });
+
+  it("announces successful transaction creation", () => {
+    useActionStateMock.mockReturnValue([
+      { error: null, success: "Transaction created." },
+      formActionMock,
+      false,
+    ]);
+
+    render(<TransactionForm accounts={accounts} />);
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Transaction created.",
+    );
+  });
+
+  it("disables and relabels submission while pending", () => {
+    useActionStateMock.mockReturnValue([
+      { error: null, success: null },
+      formActionMock,
+      true,
+    ]);
+
+    render(<TransactionForm accounts={accounts} />);
+
+    expect(
+      screen.getByRole("button", { name: "Creating transaction…" }),
+    ).toBeDisabled();
   });
 });

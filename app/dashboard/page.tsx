@@ -56,7 +56,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <Link
-          href="/dashboard/transactions/new"
+          href="/dashboard/transactions"
           className="inline-flex min-h-11 items-center justify-center rounded-xl bg-sidebar px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-sidebar/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           Add transaction

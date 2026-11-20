@@ -12,7 +12,7 @@ describe("DashboardPage", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Add transaction" }),
-    ).toHaveAttribute("href", "/dashboard/transactions/new");
+    ).toHaveAttribute("href", "/dashboard/transactions");
   });
 
   it("shows formatted financial summary values", () => {

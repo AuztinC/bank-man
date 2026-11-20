@@ -1,5 +1,5 @@
 import { AccountForm } from "@/app/dashboard/accounts/_components/account-form";
-import { formatCents } from "@/lib/money";
+import { formatCents, sumCents } from "@/lib/money";
 import { createClient } from "@/lib/supabase/server";
 
 type AccountRow = {
@@ -10,6 +10,7 @@ type AccountRow = {
   opening_balance_cents: number;
   opening_balance_as_of: string;
   opening_balance_status: string;
+  transactions: { amount_cents: number }[];
 };
 
 function titleCase(value: string): string {
@@ -32,7 +33,7 @@ export default async function AccountsPage() {
     const { data, error } = await supabase
       .from("accounts")
       .select(
-        "id, account_name, account_type, currency, opening_balance_cents, opening_balance_as_of, opening_balance_status",
+        "id, account_name, account_type, currency, opening_balance_cents, opening_balance_as_of, opening_balance_status, transactions(amount_cents)",
       )
       .is("archived_at", null)
       .order("account_name", { ascending: true });
@@ -98,7 +99,17 @@ export default async function AccountsPage() {
                     </div>
                     <div className="sm:text-right">
                       <p className="text-xl font-semibold">
-                        {formatCents(account.opening_balance_cents)}
+                        {formatCents(
+                          sumCents([
+                            account.opening_balance_cents,
+                            ...account.transactions.map(
+                              (transaction) => transaction.amount_cents,
+                            ),
+                          ]),
+                        )}
+                      </p>
+                      <p className="mt-1 text-xs font-medium text-muted">
+                        Current balance
                       </p>
                       <p className="mt-1 text-xs text-muted">
                         Opening balance as of{" "}
