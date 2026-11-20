@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(70);
+select plan(79);
 
 create schema tests;
 
@@ -74,6 +74,7 @@ select columns_are(
     'currency',
     'opening_balance_cents',
     'opening_balance_as_of',
+    'opening_balance_status',
     'archived_at',
     'created_at',
     'updated_at'
@@ -184,6 +185,26 @@ select col_has_check(
   'accounts should constrain account names'
 );
 
+select throws_ok(
+  $$
+    insert into public.accounts (
+      user_id,
+      account_name,
+      account_type,
+      opening_balance_as_of
+    )
+    values (
+      '11111111-1111-1111-1111-111111111111',
+      repeat('a', 101),
+      'checking',
+      '2026-11-13'
+    )
+  $$,
+  '23514',
+  null,
+  'accounts should reject names longer than 100 characters'
+);
+
 select col_type_is(
   'public',
   'accounts',
@@ -264,6 +285,104 @@ select col_hasnt_default(
   'accounts',
   'opening_balance_as_of',
   'accounts.opening_balance_as_of should not have a default'
+);
+
+select col_type_is(
+  'public',
+  'accounts',
+  'opening_balance_status',
+  'text',
+  'accounts.opening_balance_status should be text'
+);
+select col_not_null(
+  'public',
+  'accounts',
+  'opening_balance_status',
+  'accounts.opening_balance_status should be required'
+);
+select col_default_is(
+  'public',
+  'accounts',
+  'opening_balance_status',
+  'unverified',
+  'accounts.opening_balance_status should default to unverified'
+);
+select col_has_check(
+  'public',
+  'accounts',
+  'opening_balance_status',
+  'accounts should constrain opening balance statuses'
+);
+
+select lives_ok(
+  $$
+    insert into public.accounts (
+      user_id,
+      account_type,
+      opening_balance_as_of,
+      opening_balance_status
+    )
+    values (
+      '11111111-1111-1111-1111-111111111111',
+      'checking',
+      '2026-11-13',
+      'unverified'
+    )
+  $$,
+  'accounts should accept the unverified opening balance status'
+);
+select lives_ok(
+  $$
+    insert into public.accounts (
+      user_id,
+      account_type,
+      opening_balance_as_of,
+      opening_balance_status
+    )
+    values (
+      '11111111-1111-1111-1111-111111111111',
+      'checking',
+      '2026-11-13',
+      'verified'
+    )
+  $$,
+  'accounts should accept the verified opening balance status'
+);
+select lives_ok(
+  $$
+    insert into public.accounts (
+      user_id,
+      account_type,
+      opening_balance_as_of,
+      opening_balance_status
+    )
+    values (
+      '11111111-1111-1111-1111-111111111111',
+      'checking',
+      '2026-11-13',
+      'disputed'
+    )
+  $$,
+  'accounts should accept the disputed opening balance status'
+);
+select throws_ok(
+  $$
+    insert into public.accounts (
+      user_id,
+      account_type,
+      opening_balance_as_of,
+      opening_balance_status
+    )
+    values (
+      '11111111-1111-1111-1111-111111111111',
+      'checking',
+      '2026-11-13',
+      'unknown'
+    )
+  $$,
+  '23514',
+  null,
+  'accounts should reject unknown opening balance statuses'
 );
 
 select col_type_is(

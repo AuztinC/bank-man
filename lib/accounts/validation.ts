@@ -20,7 +20,11 @@ const openingBalanceSchema = z.string().transform((value, context) => {
 
 const accountCredentialsSchema = z
   .object({
-    accountName: z.string().trim().min(1, "Account must have a name."),
+    accountName: z
+      .string()
+      .trim()
+      .min(1, "Account must have a name.")
+      .max(100, "Account name must be 100 characters or fewer."),
     accountType: z.preprocess(
       (input) =>
         typeof input === "string" ? input.trim().toLowerCase() : input,

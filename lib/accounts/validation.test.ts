@@ -28,6 +28,14 @@ describe("parseAccountInput", () => {
     ).toBe("Good Account");
   });
 
+  it("accepts an account name at the maximum length", () => {
+    const accountName = "a".repeat(100);
+
+    expect(
+      parseAccountInput({ ...validAccount, accountName }).accountName,
+    ).toBe(accountName);
+  });
+
   it.each(["checking", "savings", "cash"])(
     "accepts the %s account type",
     (accountType) => {
@@ -55,7 +63,7 @@ describe("parseAccountInput", () => {
     },
   );
 
-  it.each(["", "   ", undefined, 42])(
+  it.each(["", "   ", "a".repeat(101), undefined, 42])(
     "rejects an invalid account name: %j",
     (accountName) => {
       expect(() =>
